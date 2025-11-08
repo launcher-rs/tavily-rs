@@ -3,7 +3,7 @@
 * 添加多api_key
 * 添加重试模式: multi_retry, false: 单个api重试, true: 选择不同api重试
 
-# Tavily Rust SDK
+# Tavily2 Rust SDK
 
 Unofficial (for now 🫠) Rust SDK for the
 [Tavily Search API](https://tavily.com) - the AI-powered search engine for LLM
@@ -17,20 +17,16 @@ applications 🚀
 ## Installation
 
 ```bash
-cargo add tavily
+cargo add tavily2
 ```
 
-or add it to your `Cargo.toml`:
 
-```toml
-[dependencies]
-tavily = "^2.0.0"
-```
 
 ## Quick Start
 
 ```rust
-use tavily::{Tavily, SearchRequest, Result};
+use std::time::Duration;
+use tavily2::{Tavily, SearchRequest, Result};
 
 #[tokio::main]
 async fn main() -> Result<()> {

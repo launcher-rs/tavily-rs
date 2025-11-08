@@ -1,6 +1,6 @@
 use reqwest::{Client, ClientBuilder};
 use std::time::Duration;
-
+use rand::Rng;
 use crate::error::{Result, TavilyError};
 use crate::request::{ExtractRequest, SearchRequest};
 use crate::response::{ExtractResult, SearchResponse};
@@ -11,16 +11,24 @@ const BASE_URL: &str = "https://api.tavily.com";
 
 #[derive(Clone)]
 pub struct TavilyConfig {
-    api_key: String,
+    api_keys: Vec<String>,
     timeout: Duration,
     base_url: String,
     max_retries: u32,
 }
 
+impl TavilyConfig {
+    pub fn get_api_key(&self) -> String {
+        let mut rng = rand::rng();
+        let idx = rng.random_range(0..self.api_keys.len());
+        self.api_keys[idx].to_string()
+    }
+}
+
 impl Default for TavilyConfig {
     fn default() -> Self {
         Self {
-            api_key: String::new(),
+            api_keys: Vec::new(),
             timeout: Duration::from_secs(DEFAULT_TIMEOUT),
             base_url: BASE_URL.to_string(),
             max_retries: DEFAULT_MAX_RETRIES,
@@ -35,7 +43,13 @@ pub struct TavilyBuilder {
 impl TavilyBuilder {
     pub fn new(api_key: &str) -> Self {
         let mut config = TavilyConfig::default();
-        config.api_key = api_key.to_string();
+        config.api_keys = vec![api_key.to_string()];
+        Self { config }
+    }
+
+    pub fn new_with_keys(api_keys: Vec<String>) -> Self {
+        let mut config = TavilyConfig::default();
+        config.api_keys = api_keys;
         Self { config }
     }
 
@@ -55,7 +69,7 @@ impl TavilyBuilder {
     }
 
     pub fn build(self) -> Result<Tavily> {
-        if self.config.api_key.is_empty() {
+        if self.config.api_keys.is_empty() {
             return Err(TavilyError::Configuration("API key is required".into()));
         }
 
@@ -128,7 +142,7 @@ impl Tavily {
     where
         S: AsRef<str> + Into<String>,
     {
-        let request = SearchRequest::new(&self.config.api_key, &query.into());
+        let request = SearchRequest::new(&self.config.get_api_key(), &query.into());
         self.call_api("search", &request).await
     }
 
@@ -136,7 +150,7 @@ impl Tavily {
     where
         S: AsRef<str> + Into<String>,
     {
-        let request = SearchRequest::new(&self.config.api_key, &query.into()).include_answer(true);
+        let request = SearchRequest::new(&self.config.get_api_key(), &query.into()).include_answer(true);
         self.call_api("search", &request).await
     }
 
@@ -145,7 +159,7 @@ impl Tavily {
         I: IntoIterator<Item = S>,
         S: AsRef<str> + Into<String>,
     {
-        let request = ExtractRequest::new(&self.config.api_key, urls);
+        let request = ExtractRequest::new(&self.config.get_api_key(), urls);
         self.call_api("extract", &request).await
     }
 }

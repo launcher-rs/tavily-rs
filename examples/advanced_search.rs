@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use tavily::{Result, SearchRequest, Tavily};
+use tavily2::{Result, SearchRequest, Tavily};
 
 #[tokio::main]
 async fn main() -> Result<()> {

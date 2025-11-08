@@ -1,3 +1,8 @@
+# 基于 [tavily-rs](https://github.com/PierreLouisLetoquart/tavily-rs) 进行修改
+
+* 添加多api_key
+* 添加重试模式: multi_retry, false: 单个api重试, true: 选择不同api重试
+
 # Tavily Rust SDK
 
 Unofficial (for now 🫠) Rust SDK for the

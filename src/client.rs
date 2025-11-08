@@ -3,7 +3,7 @@ use crate::request::{ExtractRequest, SearchRequest};
 use crate::response::{ExtractResult, SearchResponse};
 use rand::Rng;
 use reqwest::{Client, ClientBuilder};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::fmt::Debug;
 use std::time::Duration;
 
@@ -17,7 +17,7 @@ pub struct TavilyConfig {
     timeout: Duration,
     base_url: String,
     max_retries: u32,
-    /// 单个api重试, false: 单个api重试, true: 选择不同api重试
+    /// false: 单个api重试, true: 选择不同api重试
     multi_retry: bool,
 }
 
@@ -142,10 +142,10 @@ impl Tavily {
                 if let Value::Object(ref mut map) = value {
                     map.insert("api_key".to_string(), json!(self.config.get_api_key()));
                 }
-                println!("request: {:?}", request);
+                tracing::debug!("request: {:?}", request);
                 self.client.post(&url).json(request).send().await?
             } else {
-                println!("request: {:?}", request);
+                tracing::debug!("request: {:?}", request);
 
                 self.client.post(&url).json(request).send().await?
             };

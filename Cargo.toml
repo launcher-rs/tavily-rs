@@ -1,11 +1,11 @@
 [package]
-name = "tavily"
-version = "2.0.3"
-edition = "2021"
-authors = ["Pierre-Louis Létoquart <randlgint@proton.me>"]
+name = "tavily2"
+version = "0.0.1"
+edition = "2024"
+authors = ["launcher-rs"]
 description = "A tiny tool for calling Tavily's REST API in the simplest way!"
 license = "MIT"
-repository = "https://github.com/PierreLouisLetoquart/tavily-rs"
+repository = "https://github.com/launcher-rs/tavily-rs"
 keywords = ["Tavily", "search-engine", "web-browser", "llm-search", "rag"]
 
 [dependencies]
@@ -13,6 +13,7 @@ rand = "0.9.2"
 reqwest = { version = "0.12.4", features = ["json"] }
 serde = { version = "1.0.198", features = ["derive"] }
 serde_json = "1.0.116"
+tracing = "0.1.41"
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["full"] }

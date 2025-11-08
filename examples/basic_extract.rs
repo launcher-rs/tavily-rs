@@ -1,4 +1,4 @@
-use tavily::{Result, Tavily};
+use tavily2::{Result, Tavily};
 
 #[tokio::main]
 async fn main() -> Result<()> {

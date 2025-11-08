@@ -1,9 +1,9 @@
-use reqwest::{Client, ClientBuilder};
-use std::time::Duration;
-use rand::Rng;
 use crate::error::{Result, TavilyError};
 use crate::request::{ExtractRequest, SearchRequest};
 use crate::response::{ExtractResult, SearchResponse};
+use rand::Rng;
+use reqwest::{Client, ClientBuilder};
+use std::time::Duration;
 
 const DEFAULT_TIMEOUT: u64 = 30;
 const DEFAULT_MAX_RETRIES: u32 = 3;
@@ -98,6 +98,10 @@ impl Tavily {
         TavilyBuilder::new(&api_key.into())
     }
 
+    pub fn builder_with_keys<S>(api_keys: Vec<String>) -> TavilyBuilder {
+        TavilyBuilder::new_with_keys(api_keys)
+    }
+
     fn endpoint(&self, path: &str) -> String {
         format!("{}/{}", self.config.base_url, path)
     }
@@ -150,7 +154,8 @@ impl Tavily {
     where
         S: AsRef<str> + Into<String>,
     {
-        let request = SearchRequest::new(&self.config.get_api_key(), &query.into()).include_answer(true);
+        let request =
+            SearchRequest::new(&self.config.get_api_key(), &query.into()).include_answer(true);
         self.call_api("search", &request).await
     }
 

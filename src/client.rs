@@ -98,7 +98,12 @@ impl Tavily {
         TavilyBuilder::new(&api_key.into())
     }
 
-    pub fn builder_with_keys<S>(api_keys: Vec<String>) -> TavilyBuilder {
+    pub fn builder_with_keys<S>(api_keys: Vec<S>) -> TavilyBuilder
+    where
+        S: AsRef<str> + Into<String>,
+    {
+        let api_keys: Vec<String> = api_keys.into_iter().map(Into::into).collect();
+
         TavilyBuilder::new_with_keys(api_keys)
     }
 

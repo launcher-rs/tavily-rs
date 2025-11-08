@@ -916,6 +916,7 @@ dependencies = [
  "rand",
  "reqwest",
  "serde",
+ "serde_json",
  "tokio",
 ]
 

@@ -8,6 +8,7 @@ pub enum TavilyError {
     Http(reqwest::Error),
     Configuration(String),
     RateLimit(String),
+    SerdeJson(serde_json::Error),
 }
 
 impl std::error::Error for TavilyError {}
@@ -19,6 +20,7 @@ impl fmt::Display for TavilyError {
             TavilyError::Http(err) => write!(f, "HTTP error: {}", err),
             TavilyError::Configuration(msg) => write!(f, "Configuration error: {}", msg),
             TavilyError::RateLimit(msg) => write!(f, "Rate limit error: {}", msg),
+            TavilyError::SerdeJson(err) => write!(f, "Serde json error: {}", err),
         }
     }
 }
@@ -26,5 +28,11 @@ impl fmt::Display for TavilyError {
 impl From<reqwest::Error> for TavilyError {
     fn from(err: reqwest::Error) -> Self {
         TavilyError::Http(err)
+    }
+}
+
+impl From<serde_json::Error> for TavilyError {
+    fn from(err: serde_json::Error) -> Self {
+        TavilyError::SerdeJson(err)
     }
 }

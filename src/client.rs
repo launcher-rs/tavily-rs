@@ -3,6 +3,8 @@ use crate::request::{ExtractRequest, SearchRequest};
 use crate::response::{ExtractResult, SearchResponse};
 use rand::Rng;
 use reqwest::{Client, ClientBuilder};
+use serde_json::{json, Value};
+use std::fmt::Debug;
 use std::time::Duration;
 
 const DEFAULT_TIMEOUT: u64 = 30;
@@ -15,6 +17,8 @@ pub struct TavilyConfig {
     timeout: Duration,
     base_url: String,
     max_retries: u32,
+    /// 单个api重试, false: 单个api重试, true: 选择不同api重试
+    multi_retry: bool,
 }
 
 impl TavilyConfig {
@@ -22,6 +26,10 @@ impl TavilyConfig {
         let mut rng = rand::rng();
         let idx = rng.random_range(0..self.api_keys.len());
         self.api_keys[idx].to_string()
+    }
+
+    pub fn set_multi_retry(&mut self, value: bool) {
+        self.multi_retry = value;
     }
 }
 
@@ -32,6 +40,7 @@ impl Default for TavilyConfig {
             timeout: Duration::from_secs(DEFAULT_TIMEOUT),
             base_url: BASE_URL.to_string(),
             max_retries: DEFAULT_MAX_RETRIES,
+            multi_retry: true,
         }
     }
 }
@@ -55,6 +64,11 @@ impl TavilyBuilder {
 
     pub fn timeout(mut self, timeout: Duration) -> Self {
         self.config.timeout = timeout;
+        self
+    }
+
+    pub fn multi_retry(mut self, value: bool) -> Self {
+        self.config.set_multi_retry(value);
         self
     }
 
@@ -113,14 +127,28 @@ impl Tavily {
 
     async fn call_api<T, R>(&self, endpoint: &str, request: &T) -> Result<R>
     where
-        T: serde::Serialize,
+        T: serde::Serialize + Debug,
         R: serde::de::DeserializeOwned,
     {
         let url = self.endpoint(endpoint);
 
         let mut retries = 0;
         loop {
-            let result = self.client.post(&url).json(request).send().await?;
+            let result = if retries > 0 && self.config.multi_retry {
+                // 修改 request api key
+                let mut value = serde_json::to_value(request)?;
+
+                // 2️⃣ 修改其中的字段
+                if let Value::Object(ref mut map) = value {
+                    map.insert("api_key".to_string(), json!(self.config.get_api_key()));
+                }
+                println!("request: {:?}", request);
+                self.client.post(&url).json(request).send().await?
+            } else {
+                println!("request: {:?}", request);
+
+                self.client.post(&url).json(request).send().await?
+            };
 
             if result.status().is_success() {
                 return Ok(result.json::<R>().await?);

@@ -1,6 +1,6 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 /// The response from the API when a search is made. [more info](https://docs.tavily.com/docs/tavily-api/rest_api#response)
 pub struct SearchResponse {
     pub answer: Option<String>,
@@ -11,7 +11,7 @@ pub struct SearchResponse {
     pub results: Vec<SearchResult>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 /// The result type contained in the response. [more info](https://docs.tavily.com/docs/tavily-api/rest_api#response)
 pub struct SearchResult {
     pub title: String,
@@ -21,7 +21,7 @@ pub struct SearchResult {
     pub score: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 /// The result from the API when an extract is made. [more info](https://docs.tavily.com/docs/rest-api/api-reference#request-1)
 pub struct ExtractResult {
     pub results: Vec<ExtractResultItem>,
@@ -29,13 +29,13 @@ pub struct ExtractResult {
     pub response_time: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ExtractResultItem {
     pub url: String,
     pub raw_content: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct FailedExtractResult {
     pub url: String,
     pub error: String,

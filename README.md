@@ -39,8 +39,7 @@ async fn main() -> Result<()> {
     let results = tavily.search("Latest AI developments").await?;
 
     // Advanced search with customization
-    let mut request = SearchRequest::new("tvly-your-api-key", "Breaking tech news");
-    request
+    let  request = SearchRequest::new("tvly-your-api-key", "Breaking tech news")
         .search_depth("advanced")
         .topic("news")
         .include_answer(true)

@@ -1,6 +1,6 @@
 [package]
 name = "tavily2"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2024"
 authors = ["launcher-rs"]
 description = "A tiny tool for calling Tavily's REST API in the simplest way!"
